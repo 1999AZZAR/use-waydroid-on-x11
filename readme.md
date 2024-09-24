@@ -179,3 +179,7 @@ To automate the Waydroid startup process, create the following configuration fil
 ## References
 
 For more detailed information, refer to the [official Waydroid documentation](https://docs.waydro.id/).
+
+## Demo
+
+![demo](demo.png)
