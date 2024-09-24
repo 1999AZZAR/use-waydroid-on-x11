@@ -2,86 +2,158 @@
 
 ## Table of Contents
 1. [Introduction](#introduction)
-2. [Installation](#installation)
+2. [System Requirements](#system-requirements)
+3. [Installation](#installation)
    - [Install Weston](#install-weston)
    - [Install Waydroid](#install-waydroid)
-3. [Usage](#usage)
-   - [Running Waydroid](#running-waydroid)
+   - [Initialize Waydroid](#initialize-waydroid)
+4. [Usage](#usage)
+   - [Launching Waydroid](#launching-waydroid)
    - [Stopping Waydroid](#stopping-waydroid)
-4. [Additional Configuration](#additional-configuration)
-   - [Hiding Waydroid Apps from System Launcher](#hiding-waydroid-apps-from-system-launcher)
-5. [Automation](#automation)
-6. [References](#references)
+5. [Additional Configuration](#additional-configuration)
+   - [Hiding Waydroid Apps from the System Launcher](#hiding-waydroid-apps-from-the-system-launcher)
+   - [Enable Clipboard on Weston](#enable-clipboard-on-weston)
+6. [Automation](#automation)
+   - [Creating Automated Startup Scripts](#creating-automated-startup-scripts)
+7. [Troubleshooting](#troubleshooting)
+8. [References](#references)
+
+---
 
 ## Introduction
 
-This guide provides step-by-step instructions for installing and using Waydroid on an X11 system. Waydroid is a container-based approach to boot a full Android system on Linux.
+This guide provides comprehensive instructions for installing and using **Waydroid** on an X11-based Linux system. Waydroid is a powerful tool that enables you to run Android in a containerized environment on Linux, giving you a full Android system experience directly on your desktop.
 
-## Installation
+---
 
-### Install Weston
+## System Requirements
 
-Weston is a reference implementation of a Wayland compositor. Install it using the following command:
+Before you proceed, ensure that your system meets the following prerequisites:
+- A working X11 environment.
+- Administrative privileges (sudo access).
+- **curl** and **ca-certificates** installed.
 
-```sh
-sudo apt install weston
-```
-
-### Install Waydroid
-
-#### Prerequisites
-
-First, ensure you have the necessary prerequisites:
+Ensure you have these dependencies installed by running:
 
 ```sh
 sudo apt install curl ca-certificates -y
 ```
 
-#### Add the Waydroid Repository
+---
 
-Add the Waydroid repository to your system:
+## Installation
+
+### Install Weston
+
+**Weston** is a reference Wayland compositor required by Waydroid to render the Android interface. Install Weston with the following command:
+
+```sh
+sudo apt install weston -y
+```
+
+### Install Waydroid
+
+Follow these steps to install Waydroid on your system.
+
+#### Step 1: Add the Waydroid Repository
+
+Run the following command to add the official Waydroid repository:
 
 ```sh
 curl https://repo.waydro.id | sudo bash
 ```
 
-#### Install Waydroid
+#### Step 2: Install Waydroid
 
-Install Waydroid using the following command:
+Once the repository is added, install Waydroid using:
 
 ```sh
 sudo apt install waydroid -y
 ```
 
-## Usage
+---
 
-### Running Waydroid
+### Initialize Waydroid
 
-1. Open Weston:
+**Waydroid initialization** must be done from within the **Weston session**. Follow these steps to initialize Waydroid:
+
+1. **Start Weston:**
+
+   In a terminal, run:
 
    ```sh
    weston --socket=mysocket
    ```
 
-2. Inside the Weston terminal, launch Waydroid:
+   This command starts a Weston session on the specified socket.
+
+2. **Switch to the Weston terminal:**
+
+   In the Weston terminal window (where Weston is running), perform one of the following initialization commands depending on your preference.
+
+#### Vanilla Android Initialization
+
+To initialize Waydroid without Google Apps (GAPPS), run:
+
+```sh
+sudo waydroid init
+```
+
+#### Android with GAPPS
+
+To initialize Waydroid with Google Apps (GAPPS) support, use:
+
+```sh
+sudo waydroid init -f -s GAPPS
+```
+
+After initialization, Waydroid is ready to be launched. You can now proceed with launching Waydroid using the instructions below.
+
+---
+
+## Usage
+
+### Launching Waydroid
+
+Once initialized, you can launch Waydroid within a Weston session using the following steps:
+
+1. **Start Weston:**
+
+   In a terminal, run:
+
+   ```sh
+   weston --socket=mysocket
+   ```
+
+   This command initializes a Weston session with a specific socket.
+
+2. **Launch Waydroid:**
+
+   Inside the Weston terminal, start the Waydroid user interface:
 
    ```sh
    waydroid show-full-ui
    ```
 
+   This will boot the full Android system within the Wayland environment.
+
 ### Stopping Waydroid
 
-To stop Waydroid, use the following command:
+When you are finished using Waydroid, you can stop the session by running:
 
 ```sh
 waydroid session stop
 ```
 
+This will gracefully terminate the Waydroid session.
+
+---
+
 ## Additional Configuration
 
-### Hiding Waydroid Apps from System Launcher
+### Hiding Waydroid Apps from the System Launcher
 
-To prevent Waydroid apps from appearing in your system launcher, run:
+By default, Waydroid apps may appear in your system launcher. To prevent this and keep your launcher clean, run the following script:
 
 ```sh
 for a in ~/.local/share/applications/waydroid.*.desktop; do
@@ -89,97 +161,126 @@ for a in ~/.local/share/applications/waydroid.*.desktop; do
 done
 ```
 
-This command adds a `NoDisplay=true` entry to each Waydroid application's `.desktop` file.
+This script adds the `NoDisplay=true` entry to each Waydroid `.desktop` file, effectively hiding them from the system launcher.
+
+### Enable Clipboard on Weston
+
+To enable clipboard functionality between Weston and X11 environments, follow these steps:
+
+1. **Install pyclip (Python clipboard library):**
+
+   ```sh
+   sudo pip install pyclip
+   ```
+
+2. **Install wl-clipboard (Wayland clipboard utility):**
+
+   ```sh
+   sudo apt install wl-clipboard
+   ```
+
+With these tools, you can now share clipboard data between your Waydroid session and the X11 environment, making copy-pasting more seamless.
+
+---
 
 ## Automation
 
-To automate the Waydroid startup process, create the following configuration files:
+You can automate Waydroid’s startup and shutdown processes by creating scripts and a desktop entry.
 
-1. `~/.config/weston.ini`:
+### Creating Automated Startup Scripts
 
-   ```ini
-   [libinput]
-   enable-tap=true
+#### 1. Create a Weston Configuration File
 
-   [shell]
-   panel-position=none
-   ```
+Create a `~/.config/weston.ini` file to configure Weston’s behavior:
 
-2. `/usr/bin/waydroid-session.sh`:
+```ini
+[libinput]
+enable-tap=true
 
-   ```sh
-   #!/bin/bash
+[shell]
+panel-position=none
+```
 
-   # Ensure the script is run from its directory
-   cd "$(dirname "$0")"
+This configuration improves input handling and removes the panel from Weston.
 
-   start_waydroid() {
-       weston --xwayland &
-       WESTON_PID=$!
-       export WAYLAND_DISPLAY=wayland-1
-       sleep 2
-       waydroid show-full-ui &
-       WAYDROID_PID=$!
-   }
+#### 2. Create a Waydroid Startup Script
 
-   stop_waydroid() {
-       # Stop Waydroid session
-       waydroid session stop
+Save the following script as `/usr/bin/waydroid-session.sh`:
 
-       # Kill Weston
-       if [ -n "$WESTON_PID" ]; then
-           kill $WESTON_PID
-       else
-           killall weston
-       fi
+```sh
+#!/bin/bash
 
-       # Ensure Waydroid is stopped
-       if [ -n "$WAYDROID_PID" ]; then
-           kill $WAYDROID_PID 2>/dev/null
-       fi
-       killall waydroid 2>/dev/null
-   }
+# Start Weston
+weston --xwayland &
+WESTON_PID=$!
+export WAYLAND_DISPLAY=wayland-1
+sleep 2
 
-   # Start Waydroid
-   start_waydroid
+# Launch Waydroid
+waydroid show-full-ui &
+WAYDROID_PID=$!
 
-   # Wait for Weston to exit
-   wait $WESTON_PID
+# Function to stop Waydroid
+stop_waydroid() {
+    waydroid session stop
+    kill $WESTON_PID
+    kill $WAYDROID_PID 2>/dev/null
+}
 
-   # When Weston exits, stop the session
-   stop_waydroid
-   ```
+# Wait for Weston to finish
+wait $WESTON_PID
 
-   Make sure to make this script executable:
+# Stop Waydroid after Weston exits
+stop_waydroid
+```
 
-   ```sh
-   chmod +x waydroid-session.sh
-   ```
+Make the script executable:
 
-3. `/usr/share/applications/waydroid-session.desktop`:
+```sh
+chmod +x /usr/bin/waydroid-session.sh
+```
 
-   ```ini
-   [Desktop Entry]
-   Version=1.0
-   Type=Application
-   Name=Waydroid Session
-   Comment=Launch Waydroid X11 Session
-   Exec=/bin/bash -c "cd /usr/bin && ./waydroid-session.sh"
-   Icon=waydroid
-   Terminal=false
-   Categories=System;Emulator;
-   ```
+#### 3. Create a Desktop Entry
 
-   Make sure to make this .desktop file executable:
+Create a desktop entry to easily launch the session from your system launcher. Save the following as `/usr/share/applications/waydroid-session.desktop`:
 
-   ```sh
-   chmod +x /usr/share/applications/waydroid-session.desktop
-   ```
+```ini
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Waydroid Session
+Comment=Launch Waydroid X11 Session
+Exec=/bin/bash -c "cd /usr/bin && ./waydroid-session.sh"
+Icon=waydroid
+Terminal=false
+Categories=System;Emulator;
+```
+
+Make the desktop entry executable:
+
+```sh
+chmod +x /usr/share/applications/waydroid-session.desktop
+```
+
+---
+
+## Troubleshooting
+
+If you encounter any issues, consider the following:
+
+- **Weston fails to start:** Ensure that you have Weston installed and your X11 session is running correctly.
+- **Waydroid session does not launch:** Check your Weston configuration and ensure that Waydroid is properly installed.
+- **Performance issues:** Consider allocating more system resources to Waydroid and Weston by adjusting your system settings.
+
+For advanced troubleshooting, consult the [official Waydroid documentation](https://docs.waydro.id/).
+
+---
 
 ## References
 
-For more detailed information, refer to the [official Waydroid documentation](https://docs.waydro.id/).
+- [Waydroid Official Documentation](https://docs.waydro.id/)
+- [Weston Reference Documentation](https://wayland.freedesktop.org/)
 
-## Demo
+---
 
-![demo](demo.png)
+This guide now includes the initialization steps for Waydroid, both with and without GAPPS, and instructions for enabling clipboard functionality inside the Weston.
