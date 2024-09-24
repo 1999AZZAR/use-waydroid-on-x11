@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Waydroid Session
+Comment=Launch Waydroid X11 Session
+Exec=/bin/bash -c "cd /home/azzar/Aplications/waydroid_x11 && ./waydroid-session.sh"
+Icon=waydroid
+Terminal=false
+Categories=System;Emulator;
