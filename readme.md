@@ -164,7 +164,7 @@ To automate the Waydroid startup process, create the following configuration fil
    Type=Application
    Name=Waydroid Session
    Comment=Launch Waydroid X11 Session
-   Exec=/bin/bash -c "cd /path/to/the/script && ./waydroid-session.sh"
+   Exec=/bin/bash -c "cd /usr/bin && ./waydroid-session.sh"
    Icon=waydroid
    Terminal=false
    Categories=System;Emulator;
