@@ -109,6 +109,20 @@ sudo waydroid init -f -s GAPPS
 
 After initialization, Waydroid is ready to be launched. You can now proceed with launching Waydroid using the instructions below.
 
+#### Fix missing binder (if any)
+
+if somehow u got this error :
+
+   ```bash
+   [21:15:53] Failed to load binder driver
+   [21:15:53] modprobe: FATAL: Module binder_linux not found in directory /lib/modules/6.8.0-76060800daily20240311-generic
+   [21:15:53] ERROR: Binder node "binder" for waydroid not found
+   [21:15:53] See also: <https://github.com/waydroid>
+   Run 'waydroid log' for details.
+   ```
+
+u can follow [this guide](https://github.com/choff/anbox-modules) to solve the error.
+
 ---
 
 ## Usage
