@@ -15,8 +15,9 @@
    - [Enabling Clipboard Integration in Weston](#enabling-clipboard-integration-in-weston)
 6. [Automation](#automation)
    - [Automated Startup Scripts](#automated-startup-scripts)
-7. [Troubleshooting](#troubleshooting)
-8. [References](#references)
+7. [Uninstallation](#uninstallation)
+8. [Troubleshooting](#troubleshooting)
+9. [References](#references)
 
 ---
 
@@ -264,6 +265,35 @@ chmod +x /usr/share/applications/waydroid-session.desktop
 - **Performance issues:** Consider adjusting your system’s resource allocation for better performance.
 
 For more information, refer to the [official Waydroid documentation](https://docs.waydro.id/).
+
+---
+
+Here's a new section for your README focused on the removal process:
+
+---
+
+## Uninstallation
+
+### Removing Waydroid and Associated Components
+
+If you want to completely remove Waydroid and any associated packages from your Ubuntu-based system, you can use the `clean-removal.sh` script. Follow the instructions below:
+
+1. Ensure the script `clean-removal.sh` is executable:
+   ```bash
+   chmod +x clean-removal.sh
+   ```
+
+2. Run the script with root permissions:
+   ```bash
+   sudo ./clean-removal.sh
+   ```
+
+**What This Script Does:**
+- Stops and disables the Waydroid container service.
+- Removes Waydroid, Weston, and related packages.
+- Cleans up any configuration files and residual files.
+
+This ensures that your system is returned to its state before the installation of Waydroid.
 
 ---
 
