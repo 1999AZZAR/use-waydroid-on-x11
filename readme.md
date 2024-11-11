@@ -258,20 +258,6 @@ chmod +x /usr/share/applications/waydroid-session.desktop
 
 ---
 
-## Troubleshooting
-
-- **Weston fails to start:** Ensure Weston is correctly installed and that your X11 environment is properly configured.
-- **Waydroid doesn’t launch:** Verify the Weston session is active and Waydroid is installed correctly.
-- **Performance issues:** Consider adjusting your system’s resource allocation for better performance.
-
-For more information, refer to the [official Waydroid documentation](https://docs.waydro.id/).
-
----
-
-Here's a new section for your README focused on the removal process:
-
----
-
 ## Uninstallation
 
 ### Removing Waydroid and Associated Components
@@ -294,6 +280,16 @@ If you want to completely remove Waydroid and any associated packages from your 
 - Cleans up any configuration files and residual files.
 
 This ensures that your system is returned to its state before the installation of Waydroid.
+
+---
+
+## Troubleshooting
+
+- **Weston fails to start:** Ensure Weston is correctly installed and that your X11 environment is properly configured.
+- **Waydroid doesn’t launch:** Verify the Weston session is active and Waydroid is installed correctly.
+- **Performance issues:** Consider adjusting your system’s resource allocation for better performance.
+
+For more information, refer to the [official Waydroid documentation](https://docs.waydro.id/).
 
 ---
 
