@@ -11,10 +11,10 @@
    - [Launching Waydroid](#launching-waydroid)
    - [Stopping Waydroid](#stopping-waydroid)
 5. [Additional Configuration](#additional-configuration)
-   - [Hiding Waydroid Apps from System Launcher](#hiding-waydroid-apps-from-system-launcher)
-   - [Enabling Clipboard Integration in Weston](#enabling-clipboard-integration-in-weston)
+   - [Hiding Waydroid Apps](#hiding-waydroid-apps)
+   - [Clipboard Integration](#clipboard-integration)
 6. [Automation](#automation)
-   - [Automated Startup Scripts](#automated-startup-scripts)
+   - [Startup Scripts](#startup-scripts)
 7. [Uninstallation](#uninstallation)
 8. [Troubleshooting](#troubleshooting)
 9. [References](#references)
@@ -23,20 +23,20 @@
 
 ## Introduction
 
-This guide details the process of installing and using **Waydroid** on an X11-based Linux system. Waydroid allows you to run a complete Android system in a container, seamlessly integrated into your desktop environment. This guide covers the setup, basic usage, and customization options to enhance your Waydroid experience.
+This comprehensive guide walks you through setting up and optimizing **Waydroid** on an X11-based Linux system. Waydroid offers a seamless Android container experience, tightly integrated into your Linux desktop. We cover everything from installation to advanced configuration to ensure a smooth experience.
 
 ---
 
 ## System Requirements
 
-Before proceeding with the installation, ensure that your system meets the following requirements:
-- Running an X11 environment.
-- Administrative privileges (sudo access).
-- **curl** and **ca-certificates** packages installed.
+Ensure your system meets these prerequisites:
+- Running an **X11 desktop environment**.
+- Administrative privileges (sudo).
+- Essential packages: **curl** and **ca-certificates**.
 
-Install these dependencies by executing the command:
+Install the prerequisites:
 
-```sh
+```bash
 sudo apt install curl ca-certificates -y
 ```
 
@@ -46,29 +46,27 @@ sudo apt install curl ca-certificates -y
 
 ### Installing Weston
 
-**Weston** is the Wayland compositor required for rendering the Waydroid environment. To install it, run:
+Install Weston, the required Wayland compositor:
 
-```sh
+```bash
 sudo apt install weston -y
 ```
 
 ### Installing Waydroid
 
-Follow the steps below to install Waydroid.
-
 #### Step 1: Add the Waydroid Repository
 
-Add the official Waydroid repository by running the following command:
+Add the repository:
 
-```sh
+```bash
 curl https://repo.waydro.id | sudo bash
 ```
 
 #### Step 2: Install Waydroid
 
-Once the repository is added, install Waydroid using:
+Install Waydroid:
 
-```sh
+```bash
 sudo apt install waydroid -y
 ```
 
@@ -76,46 +74,34 @@ sudo apt install waydroid -y
 
 ### Initializing Waydroid
 
-Initialization must be performed within a **Weston session**. Follow these steps to initialize Waydroid:
+Follow these steps within a Weston session:
 
-1. **Start Weston:**
+1. **Start Weston**:
 
-   Open a terminal and run:
-
-   ```sh
+   ```bash
    weston --socket=mysocket
    ```
 
-   This will start a Weston session on the specified socket.
-
-2. **Initialize Waydroid:**
-
-   In the Weston terminal, you can initialize Waydroid using one of the following commands:
-
-   - **Vanilla Android (No Google Apps):**
-
-     ```sh
+2. **Initialize Waydroid**:
+   - Without Google Apps:
+     ```bash
      sudo waydroid init
      ```
-
-   - **Android with Google Apps (GAPPS):**
-
-     ```sh
+   - With Google Apps:
+     ```bash
      sudo waydroid init -f -s GAPPS
      ```
 
-Once initialized, Waydroid is ready for use.
+#### Troubleshooting Binder Module Errors
 
-#### Fix for Missing Binder Module
-
-If you encounter an error related to missing binder modules, such as:
+For issues like:
 
 ```bash
 [21:15:53] Failed to load binder driver
 [21:15:53] ERROR: Binder node "binder" for waydroid not found
 ```
 
-Refer to [this guide](https://github.com/choff/anbox-modules) for instructions on resolving the issue.
+Follow [this guide](https://github.com/choff/anbox-modules).
 
 ---
 
@@ -123,79 +109,65 @@ Refer to [this guide](https://github.com/choff/anbox-modules) for instructions o
 
 ### Launching Waydroid
 
-Once initialized, launch Waydroid within the Weston session:
+1. Start Weston:
 
-1. **Start Weston:**
-
-   ```sh
+   ```bash
    weston --socket=mysocket
    ```
 
-2. **Launch Waydroid Interface:**
+2. Launch Waydroid:
 
-   In the Weston terminal, run:
-
-   ```sh
+   ```bash
    waydroid show-full-ui
    ```
 
-   This will launch the full Android system in the Wayland environment.
-
 ### Stopping Waydroid
 
-To stop Waydroid, use the following command:
+Stop Waydroid gracefully:
 
-```sh
+```bash
 waydroid session stop
 ```
-
-This will gracefully terminate the session.
 
 ---
 
 ## Additional Configuration
 
-### Hiding Waydroid Apps from System Launcher
+### Hiding Waydroid Apps
 
-Waydroid apps may appear in your system's application launcher by default. To hide these entries, run the following script:
+Run this script to hide Waydroid apps from the system launcher:
 
-```sh
-for a in ~/.local/share/applications/waydroid.*.desktop; do
-    grep -q NoDisplay $a || sed '/^Icon=/a NoDisplay=true' -i $a
+```bash
+for app in ~/.local/share/applications/waydroid.*.desktop; do
+    grep -q NoDisplay $app || sed '/^Icon=/a NoDisplay=true' -i $app
 done
 ```
 
-This will add a `NoDisplay=true` entry to all Waydroid `.desktop` files, hiding them from the launcher.
+### Clipboard Integration
 
-### Enabling Clipboard Integration in Weston
+Enable clipboard sharing:
 
-To enable clipboard sharing between Weston and the X11 environment:
+1. Install pyclip:
 
-1. **Install pyclip:**
-
-   ```sh
+   ```bash
    sudo pip install pyclip
    ```
 
-2. **Install wl-clipboard:**
+2. Install wl-clipboard:
 
-   ```sh
+   ```bash
    sudo apt install wl-clipboard
    ```
-
-This allows for seamless copy-paste functionality between Waydroid and your Linux environment.
 
 ---
 
 ## Automation
 
-To automate Waydroid startup and shutdown, follow the steps below.
+### Startup Scripts
 
-### Automated Startup Scripts
+#### 1. Configure Weston
 
-#### 1. Create a Weston Configuration
-
-Create a `~/.config/weston.ini` file with the following configuration to improve input handling and hide the panel:
+Create `~/.config/weston.ini`:
 
 ```ini
 [libinput]
@@ -205,38 +177,35 @@ enable-tap=true
 panel-position=none
 ```
 
-#### 2. Create a Waydroid Startup Script
+#### 2. Create a Startup Script
 
-Save the following script as `/usr/bin/waydroid-session.sh`:
+Save this script as `/usr/bin/waydroid-session.sh`:
 
-```sh
+```bash
 #!/bin/bash
 
-# Start Weston
 weston --xwayland &
 WESTON_PID=$!
 export WAYLAND_DISPLAY=wayland-1
 sleep 2
 
-# Launch Waydroid
 waydroid show-full-ui &
 WAYDROID_PID=$!
 
-# Stop Waydroid when Weston exits
 trap "waydroid session stop; kill $WESTON_PID; kill $WAYDROID_PID" EXIT
 
 wait $WESTON_PID
 ```
 
-Make the script executable:
+Make it executable:
 
-```sh
+```bash
 chmod +x /usr/bin/waydroid-session.sh
 ```
 
-#### 3. Create a Desktop Entry
+#### 3. Add a Desktop Entry
 
-Create a desktop entry to launch Waydroid easily. Save the following file as `/usr/share/applications/waydroid-session.desktop`:
+Create `/usr/share/applications/waydroid-session.desktop`:
 
 ```ini
 [Desktop Entry]
@@ -244,7 +213,7 @@ Version=1.0
 Type=Application
 Name=Waydroid Session
 Comment=Start Waydroid in a Weston session
-Exec=/bin/bash -c "cd /usr/bin && ./waydroid-session.sh"
+Exec=/usr/bin/waydroid-session.sh
 Icon=waydroid
 Terminal=false
 Categories=System;Emulator;
@@ -252,7 +221,7 @@ Categories=System;Emulator;
 
 Make it executable:
 
-```sh
+```bash
 chmod +x /usr/share/applications/waydroid-session.desktop
 ```
 
@@ -260,44 +229,35 @@ chmod +x /usr/share/applications/waydroid-session.desktop
 
 ## Uninstallation
 
-### Removing Waydroid and Associated Components
+### Full Removal
 
-If you want to completely remove Waydroid and any associated packages from your Ubuntu-based system, you can use the `clean-removal.sh` script. Follow the instructions below:
+Run the `clean-removal.sh` script:
 
-1. Ensure the script `clean-removal.sh` is executable:
+1. Make it executable:
+
    ```bash
    chmod +x clean-removal.sh
    ```
 
-2. Run the script with root permissions:
+2. Execute:
+
    ```bash
    sudo ./clean-removal.sh
    ```
-
-**What This Script Does:**
-- Stops and disables the Waydroid container service.
-- Removes Waydroid, Weston, and related packages.
-- Cleans up any configuration files and residual files.
-
-This ensures that your system is returned to its state before the installation of Waydroid.
 
 ---
 
 ## Troubleshooting
 
-- **Weston fails to start:** Ensure Weston is correctly installed and that your X11 environment is properly configured.
-- **Waydroid doesn’t launch:** Verify the Weston session is active and Waydroid is installed correctly.
-- **Performance issues:** Consider adjusting your system’s resource allocation for better performance.
-
-For more information, refer to the [official Waydroid documentation](https://docs.waydro.id/).
+- **Weston startup issues**: Verify Weston and X11 configurations.
+- **Waydroid launch failures**: Ensure a running Weston session.
+- **Performance problems**: Allocate more system resources.
 
 ---
 
 ## References
 
-- [Waydroid Official Documentation](https://docs.waydro.id/)
-- [Weston Reference Documentation](https://wayland.freedesktop.org/)
+- [Waydroid Documentation](https://docs.waydro.id/)
+- [Weston Documentation](https://wayland.freedesktop.org/)
 
 ---
-
-This guide covers both the installation and configuration of Waydroid, including clipboard integration and automated startup for a smoother experience.
