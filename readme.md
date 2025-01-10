@@ -4,6 +4,8 @@
 1. [Introduction](#introduction)
 2. [System Requirements](#system-requirements)
 3. [Installation](#installation)
+   - [Auto](#auto-install)
+   - [Manual](#manual-install)
    - [Installing Weston](#installing-weston)
    - [Installing Waydroid](#installing-waydroid)
    - [Initializing Waydroid](#initializing-waydroid)
@@ -44,7 +46,17 @@ sudo apt install curl ca-certificates -y
 
 ## Installation
 
-### Installing Weston
+### Auto Install
+
+You can use the following one-liner to install and set up Waydroid directly.
+
+```bash
+curl -sSL https://raw.githubusercontent.com/1999AZZAR/use-waydroid-on-x11/master/install.sh | sudo bash
+```
+
+### Manual Install
+
+#### Installing Weston
 
 Install Weston, the required Wayland compositor:
 
@@ -52,9 +64,9 @@ Install Weston, the required Wayland compositor:
 sudo apt install weston -y
 ```
 
-### Installing Waydroid
+#### Installing Waydroid
 
-#### Step 1: Add the Waydroid Repository
+##### Step 1: Add the Waydroid Repository
 
 Add the repository:
 
@@ -62,7 +74,7 @@ Add the repository:
 curl https://repo.waydro.id | sudo bash
 ```
 
-#### Step 2: Install Waydroid
+##### Step 2: Install Waydroid
 
 Install Waydroid:
 
@@ -72,7 +84,7 @@ sudo apt install waydroid -y
 
 ---
 
-### Initializing Waydroid
+#### Initializing Waydroid
 
 Follow these steps within a Weston session:
 
