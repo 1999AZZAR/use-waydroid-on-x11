@@ -1,9 +1,9 @@
+#!/bin/bash
+
 # weston --xwayland &
 # export WAYLAND_DISPLAY=wayland-1
 # sleep 2
 # waydroid show-full-ui &
-
-#!/bin/bash
 
 # Ensure the script is run from its directory
 cd "$(dirname "$0")"
