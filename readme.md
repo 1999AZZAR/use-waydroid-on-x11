@@ -58,12 +58,12 @@ curl -sSL https://raw.githubusercontent.com/1999AZZAR/use-waydroid-on-x11/master
 
 ### Manual Install
 
-#### Installing Weston
+#### Installing a nested Wayland compositor
 
-Install Weston, the required Wayland compositor:
+Install **Cage** (recommended for many X11 setups, especially around suspend/resume) and **Weston** (optional legacy path):
 
 ```bash
-sudo apt install weston -y
+sudo apt install cage weston -y
 ```
 
 #### Installing Waydroid
@@ -196,23 +196,7 @@ panel-position=none
 
 #### 2. Create a Startup Script
 
-Save this script as `/usr/bin/waydroid-session.sh`:
-
-```bash
-#!/bin/bash
-
-weston --xwayland &
-WESTON_PID=$!
-export WAYLAND_DISPLAY=wayland-1
-sleep 2
-
-waydroid show-full-ui &
-WAYDROID_PID=$!
-
-trap "waydroid session stop; kill $WESTON_PID; kill $WAYDROID_PID" EXIT
-
-wait $WESTON_PID
-```
+Save the repository `waydroid-session.sh` as `/usr/bin/waydroid-session.sh` (or copy the same file from this project). It defaults to **Cage** and uses a proper `cleanup` trap on `EXIT`, `INT`, `TERM`, and `HUP`. To use Weston instead, set `WAYDROID_COMPOSITOR=weston` in the desktop entry `Exec` line or environment.
 
 Make it executable:
 
@@ -229,7 +213,7 @@ Create `/usr/share/applications/waydroid-session.desktop`:
 Version=1.0
 Type=Application
 Name=Waydroid Session
-Comment=Start Waydroid in a Weston session
+Comment=Start Waydroid in Cage (set WAYDROID_COMPOSITOR=weston for Weston)
 Exec=/usr/bin/waydroid-session.sh
 Icon=waydroid
 Terminal=false
@@ -269,6 +253,7 @@ Run the `clean-removal.sh` script:
 - **Weston startup issues**: Verify Weston and X11 configurations.
 - **Waydroid launch failures**: Ensure a running Weston session.
 - **Performance problems**: Allocate more system resources.
+- **Suspend/resume and `libwayland` client errors**: Weston can lose nested-Wayland state after repeated suspend cycles under some X11 window managers. The default session script uses **Cage** (`cage -s -- waydroid show-full-ui`) instead. To force the old behavior: `WAYDROID_COMPOSITOR=weston waydroid-session.sh`.
 
 ### Fixing Play Store Uncertified Device Issue
 

@@ -1,45 +1,72 @@
 #!/bin/bash
 
-# weston --xwayland &
-# export WAYLAND_DISPLAY=wayland-1
-# sleep 2
-# waydroid show-full-ui &
+# Start Waydroid inside a nested Wayland compositor on X11.
+#
+# Default compositor is Cage (more stable across suspend/resume than Weston
+# for many setups). Override with:
+#   WAYDROID_COMPOSITOR=weston waydroid-session.sh
 
-# Ensure the script is run from its directory
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit 1
 
-start_waydroid() {
-    weston --xwayland &
-    WESTON_PID=$!
-    export WAYLAND_DISPLAY=wayland-1
-    sleep 2
-    waydroid show-full-ui &
-    WAYDROID_PID=$!
+COMPOSITOR="${WAYDROID_COMPOSITOR:-cage}"
+COMPOSITOR=$(printf '%s' "$COMPOSITOR" | tr '[:upper:]' '[:lower:]')
+
+COMPOSITOR_PID=
+WAYDROID_PID=
+
+cleanup() {
+  trap - EXIT INT TERM HUP
+
+  waydroid session stop 2>/dev/null || true
+
+  if [ -n "${WAYDROID_PID:-}" ]; then
+    kill "$WAYDROID_PID" 2>/dev/null || true
+    wait "$WAYDROID_PID" 2>/dev/null || true
+  fi
+
+  if [ -n "${COMPOSITOR_PID:-}" ]; then
+    kill "$COMPOSITOR_PID" 2>/dev/null || true
+    wait "$COMPOSITOR_PID" 2>/dev/null || true
+  fi
+
+  killall waydroid 2>/dev/null || true
+
+  case "$COMPOSITOR" in
+    weston) killall weston 2>/dev/null || true ;;
+    cage)   killall cage 2>/dev/null || true ;;
+  esac
 }
 
-stop_waydroid() {
-    # Stop Waydroid session
-    waydroid session stop
+trap cleanup EXIT INT TERM HUP
 
-    # Kill Weston
-    if [ -n "$WESTON_PID" ]; then
-        kill $WESTON_PID
-    else
-        killall weston
-    fi
-
-    # Ensure Waydroid is stopped
-    if [ -n "$WAYDROID_PID" ]; then
-        kill $WAYDROID_PID 2>/dev/null
-    fi
-    killall waydroid 2>/dev/null
+run_cage() {
+  if ! command -v cage >/dev/null 2>&1; then
+    echo "cage not found; install it (e.g. sudo apt install cage) or use WAYDROID_COMPOSITOR=weston" >&2
+    exit 1
+  fi
+  # Foreground: do not exec, so EXIT trap still runs when Cage exits.
+  cage -s -- waydroid show-full-ui
 }
 
-# Start Waydroid
-start_waydroid
+run_weston() {
+  if ! command -v weston >/dev/null 2>&1; then
+    echo "weston not found" >&2
+    exit 1
+  fi
+  weston --xwayland &
+  COMPOSITOR_PID=$!
+  export WAYLAND_DISPLAY=wayland-1
+  sleep 2
+  waydroid show-full-ui &
+  WAYDROID_PID=$!
+  wait "$COMPOSITOR_PID"
+}
 
-# Wait for Weston to exit
-wait $WESTON_PID
-
-# When Weston exits, stop the session
-stop_waydroid
+case "$COMPOSITOR" in
+  cage)  run_cage ;;
+  weston) run_weston ;;
+  *)
+    echo "Unknown WAYDROID_COMPOSITOR=$COMPOSITOR (use cage or weston)" >&2
+    exit 1
+    ;;
+esac

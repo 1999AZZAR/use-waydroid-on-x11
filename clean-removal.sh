@@ -13,8 +13,8 @@ sudo systemctl disable waydroid-container
 sudo apt purge -y waydroid
 sudo apt autoremove -y
 
-# Remove Weston package and its dependencies
-sudo apt purge -y weston
+# Remove nested compositor packages installed by this guide
+sudo apt purge -y cage weston
 sudo apt autoremove -y
 
 # Delete user configuration and cache related to Waydroid
