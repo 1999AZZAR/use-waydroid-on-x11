@@ -7,7 +7,7 @@
 3. [Installation](#installation)
    - [Auto](#auto-install)
    - [Manual](#manual-install)
-     - [Installing Weston](#installing-weston)
+     - [Installing a nested Wayland compositor](#installing-a-nested-wayland-compositor)
      - [Installing Waydroid](#installing-waydroid)
      - [Initializing Waydroid](#initializing-waydroid)
 4. [Usage](#usage)
@@ -88,13 +88,15 @@ sudo apt install waydroid -y
 
 #### Initializing Waydroid
 
-Follow these steps within a Weston session:
+Follow these steps with Weston running (nested on X11 is the expected case here):
 
-1. **Start Weston**:
+1. **Start Weston** (default Wayland socket is `wayland-0` under `$XDG_RUNTIME_DIR`; that matches Wayland clients when `WAYLAND_DISPLAY` is unset):
    
    ```bash
-   weston --socket=mysocket
+   weston --xwayland
    ```
+
+   If you use a custom socket (`weston --socket=NAME`), set `export WAYLAND_DISPLAY=NAME` in any terminal where you run Waydroid. If a compositor already uses `wayland-0` (for example you are not on a plain X11 desktop), Weston may create `wayland-1` instead; list sockets with `ls "$XDG_RUNTIME_DIR"/wayland-*` and export the one Weston opened.
 
 2. **Initialize Waydroid**:
    
@@ -126,13 +128,13 @@ Follow [this guide](https://github.com/choff/anbox-modules).
 
 ### Launching Waydroid
 
-1. Start Weston:
+1. Start Weston (same defaults as above; on a typical X11 session this is `wayland-0`):
    
    ```bash
-   weston --socket=mysocket
+   weston --xwayland
    ```
 
-2. Launch Waydroid:
+2. From another terminal, if needed set `export WAYLAND_DISPLAY=wayland-0`, then launch Waydroid:
    
    ```bash
    waydroid show-full-ui

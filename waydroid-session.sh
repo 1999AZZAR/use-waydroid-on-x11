@@ -55,7 +55,8 @@ run_weston() {
   fi
   weston --xwayland &
   COMPOSITOR_PID=$!
-  export WAYLAND_DISPLAY=wayland-1
+  # First nested Weston on a typical X11 desktop uses wayland-0 (Waydroid default).
+  export WAYLAND_DISPLAY=wayland-0
   sleep 2
   waydroid show-full-ui &
   WAYDROID_PID=$!
