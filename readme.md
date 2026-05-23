@@ -15,6 +15,7 @@
    - [Stopping Waydroid](#stopping-waydroid)
 5. [Additional Configuration](#additional-configuration)
    - [Hiding Waydroid Apps](#hiding-waydroid-apps)
+   - [ARM Support](#arm-support-libhoudini--libndk)
    - [Clipboard Integration](#clipboard-integration)
 6. [Automation](#automation)
    - [Startup Scripts](#startup-scripts)
@@ -161,6 +162,22 @@ for app in ~/.local/share/applications/waydroid.*.desktop; do
     grep -q NoDisplay $app || sed '/^Icon=/a NoDisplay=true' -i $app
 done
 ```
+
+### ARM Support (libhoudini / libndk)
+
+To enable ARM support on x86 for Waydroid, use the `waydroid_script` tool:
+
+```bash
+git clone https://github.com/casualsnek/waydroid_script
+cd waydroid_script
+python3 -m venv venv
+venv/bin/pip install -r requirements.txt
+sudo venv/bin/pip install InquirerPy tqdm
+sudo venv/bin/python3 main.py
+```
+
+1. Run the script as shown above.
+2. Choose `libhoudini` or `libndk` from the menu to install ARM translation layers.
 
 ### Clipboard Integration
 
